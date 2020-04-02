@@ -13,7 +13,14 @@ export default function(Vue, { router, head, isClient, appOptions }) {
 
   appOptions.apolloProvider = new VueApollo({
     defaultClient: new ApolloClient({
-      uri: "https://fakeql.com/graphql/4956b6d2b5eefad5422d6ba570947f50"
+      uri: process.env.GRIDSOME_FAUNA_ENDPOINT,
+      request: operation => {
+        operation.setContext({
+          headers: {
+            authorization: `Bearer ${process.env.GRIDSOME_FAUNA_SECRET}`
+          }
+        });
+      }
     })
   });
 }

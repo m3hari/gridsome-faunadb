@@ -1,15 +1,22 @@
 <template>
   <Layout>
     <div>
-      <h1>Posts</h1>
-      <div v-if="$apollo.queries.posts.loading">
+      <h1>Products</h1>
+      <div v-if="$apollo.queries.products.loading">
         loading ...
       </div>
-      <ul v-else>
-        <li v-for="item in posts" :key="item.id">
-          {{ item.title }}
-        </li>
-      </ul>
+      <div v-else class="container">
+        <div class="card" v-for="item in products" :key="item._id">
+          <h3>{{ item.name }} x {{ item.quantity }}</h3>
+          <div>{{ item.description }}</div>
+          <div>
+            Price: <span>${{ item.price }}</span>
+          </div>
+          <div>
+            Location:<strong> {{ item.storehouse.name }} </strong>
+          </div>
+        </div>
+      </div>
     </div>
   </Layout>
 </template>
@@ -18,30 +25,49 @@
 import { gql } from "apollo-boost";
 export default {
   metaInfo: {
-    title: "Posts list"
+    title: "Products list"
   },
   data() {
     return {
-      posts: []
+      products: []
     };
   },
   apollo: {
-    posts: {
+    products: {
       query: gql`
         query {
-          posts {
-            id
-            title
+          allProducts {
+            data {
+              _id
+              name
+              description
+              backordered
+              quantity
+              price
+              storehouse {
+                name
+              }
+            }
           }
         }
-      `
+      `,
+      update({ allProducts }) {
+        return allProducts.data;
+      }
     }
   }
 };
 </script>
 
 <style>
-.home-links a {
-  margin-right: 1rem;
+.container {
+  display: flex !important;
+}
+.card {
+  width: 200px;
+  background: gray;
+  padding: 4px 16px;
+  margin: 6px;
+  border-radius: 8px;
 }
 </style>
